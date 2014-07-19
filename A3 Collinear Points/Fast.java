@@ -33,15 +33,18 @@ public class Fast {
             p.draw();
         }
        Arrays.sort(points);
-      
+       //Point first = points[0];
+       
        for (int i = 0; i < points.length; i++) { 
            // p is the origin
            Point p = points[i];
            
            
            // find other points q
-           Point[] q = Arrays.copyOfRange(points, i, points.length);
-          
+           Point[] q = Arrays.copyOfRange(points, 0, points.length);
+           q[0] = points[i];
+           q[i] = points[0];
+           
            Arrays.sort(q, p.SLOPE_ORDER);
            int counter = 0;
            
@@ -49,32 +52,30 @@ public class Fast {
                if (p.slopeTo(q[j]) == p.slopeTo(q[j - 1])) {
                    if (j == q.length-1) {
                        if (counter >= 1) {
-                           StdDraw.setPenRadius();
-                           p.drawTo(q[j]);
-                           
                            Point[] tempq = Arrays.copyOfRange(q, j-counter-2, j+1);
                            tempq[0] = q[0];
                            Arrays.sort(tempq);
-                           printLine(tempq);
-                           
+                           if (q[0] == tempq[0]) {
+                               printLine(tempq);
+                               StdDraw.setPenRadius();
+                               p.drawTo(q[j]);
+                           }
                            counter = 0;
-                           
-                           
                        }
                    }
                    counter++;
                // slopes aren't equal    
                } else {
                    if (counter >= 2) {
-
-                       StdDraw.setPenRadius();
-                       p.drawTo(q[j-1]);
                        Point[] auxq = Arrays.copyOfRange(q, j-counter-2, j);
                        auxq[0] = q[0];
                        Arrays.sort(auxq);
-                       printLine(auxq);
+                       if (q[0] == auxq[0]) { 
+                           printLine(auxq);
+                           StdDraw.setPenRadius();
+                           p.drawTo(q[j-1]);
+                       }
                        counter = 0;
-                       
                    }
                    counter = 0;
                }

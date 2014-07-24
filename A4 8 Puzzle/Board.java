@@ -1,7 +1,9 @@
 public class Board {
     
     private final int N;    // size of Board
-    private int[][] tiles;              
+    private int[][] tiles;
+    private int manhattan = -1;
+    private int hamming = -1;
     
     //construct a board from an N-by-N array of blocks
     // (where blocks[i][j] = block in row i, column j)
@@ -11,8 +13,7 @@ public class Board {
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                tiles[i][j] = (char) blocks[i][j];
-                //StdOut.println("tile at i,j is :" + i + j + blocks[i][j]);
+                tiles[i][j] = blocks[i][j];
             }
         }
     }
@@ -24,38 +25,43 @@ public class Board {
         
     // number of blocks out of place
     public int hamming() {
-        int hamming = 0;
+        if (this.hamming >= 0)    return this.hamming;
+        int result = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int idx = (i * N) + (j + 1);
                 if (tiles[i][j] == idx) {
-                    hamming += 0;
+                    result += 0;
                 } else if (tiles[i][j] == 0) {
                     continue;
                 } else {           
-                    hamming += 1;
+                    result += 1;
                 }
             }
         }
-        return hamming;
+        this.hamming = result;
+        return result;
     }
     
     // sum of Manhattan distances between blocks and goal
     public int manhattan() {
-        int manhattan = 0;
+        if (this.manhattan >= 0)    return this.manhattan;
+        
+        int result = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int idx = (i * N) + (j + 1);
                 if (tiles[i][j] == idx) {
-                    manhattan += 0;
+                    result += 0;
                 } else if (tiles[i][j] == 0) {
                     continue;
                 } else {
-                    manhattan += manhattanHelper(tiles[i][j], i, j);
+                    result += manhattanHelper(tiles[i][j], i, j);
                 }
              }
         }
-        return manhattan;
+        this.manhattan = result;
+        return result;
     }
     
     private int manhattanHelper(int number, int row, int col) {

@@ -23,7 +23,17 @@ public class Solver {
             if (that == null)     throw new NullPointerException("Null item");
             if (this.board.equals(that.board))        return 0;
             if (this.priority < that.priority)  return -1;
+            if (this.priority == that.priority && this.board.manhattan() < that.board.manhattan()) return -1;
             return +1;
+        }
+        
+        public String toString() {
+            StringBuilder s = new StringBuilder();
+            s.append("priority  = " + this.priority + "\n");
+            s.append("moves     = " + this.moves + "\n");
+            s.append("manhattan = " + board.manhattan() + "\n");
+            s.append(board.toString());
+            return s.toString();
         }
     }
     
@@ -87,25 +97,26 @@ public class Solver {
             return solution;
         }
     } 
-        
+
     // solve a slider puzzle (given below)
     public static void main(String[] args) {
         // create initial board from file
         In in = new In(args[0]);
         int N = in.readInt();
         int[][] blocks = new int[N][N];
-        for (int i = 0; i < N; i++) 
-            for (int j = 0; j < N; j++) 
-                 blocks[i][j] = in.readInt();
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+            blocks[i][j] = in.readInt();
         Board initial = new Board(blocks);
-
+        
         // solve the puzzle
         Solver solver = new Solver(initial);
-
+        
         // print solution to standard output
         if (!solver.isSolvable())
             StdOut.println("No solution possible");
         else {
+            StdOut.println("Minimum number of moves = " + solver.moves());
             for (Board board : solver.solution())
                 StdOut.println(board);
         }

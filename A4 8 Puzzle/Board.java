@@ -72,16 +72,10 @@ public class Board {
         for (int i = 0; i < this.N; i++) {
             for (int j = 0; j < this.N; j++) {
                 int idx = (i * this.N) + (j + 1);
-                //StdOut.println("index: , tile: " + idx +", " + tiles[i][j]);
-                //int temp = this.N-1;
-                //StdOut.println("N-1: " + temp);
-                //if (tiles[i][j] != idx) StdOut.println("bad tile"); 
                 if (idx !=  N * N - 1 && tiles[i][j] != idx) {
-                    //StdOut.println("found misplaced tile, idx, value:" + idx + tiles[i][j]); 
                     return false;
                 } 
                 if (idx == N * N - 1) {
-                    //StdOut.println("reached last tile");
                     if (tiles[N - 1][N - 1] == 0)   return true;
                     return false;
                 }
@@ -153,7 +147,6 @@ public class Board {
                 break outerloop;
             }
         }
-        
         if (i > 0) 
             result.enqueue(new Board(swap(this.tiles, i, j, i - 1, j)));
         if (i < this.N - 1)
@@ -162,7 +155,6 @@ public class Board {
             result.enqueue(new Board(swap(this.tiles, i, j, i , j - 1)));
         if (j < this.N -1)
             result.enqueue(new Board(swap(this.tiles, i, j, i , j + 1)));
-        
         return result;
     }
 

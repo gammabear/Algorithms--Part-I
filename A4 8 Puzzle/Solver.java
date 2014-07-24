@@ -97,71 +97,17 @@ public class Solver {
         for (int i = 0; i < N; i++) 
             for (int j = 0; j < N; j++) 
                  blocks[i][j] = in.readInt();
-        
-        
         Board initial = new Board(blocks);
-        //StdOut.println(initial);
-        
-        //int hamming = 0;
-        //hamming = initial.hamming();
-        //StdOut.println("hamming distance: " + hamming);
-        //int manhattan = initial.manhattan();
-        //StdOut.println("manhattan distance: " + manhattan);
-        
-        //boolean solved = initial.isGoal();
-        //StdOut.println("solved or not? " + solved);
-        
-        //Board twin;
-        //twin = initial.twin();
-        //StdOut.println("twin board: " + twin);
-        
-        
-        //int[][] xblocks = new int[N][N];
-        //for (int i = 0; i < N; i++) 
-         //   for (int j = 0; j < N; j++) 
-          //       xblocks[i][j] = 1;
-        
-        
-        
-        //Board copy = new Board(blocks);
-        //StdOut.println("3x3 1's: " + copy);
-        
-        //int[][] yblocks;
-        //yblocks = initial.swap(blocks,0,0,2,2);
-        //Board swapped = new Board(yblocks);
-        //StdOut.println("swapped:" + swapped);
-        
-       //boolean equal;
-       //equal = initial.equals(copy);
-       //StdOut.println("are boards equal?: " + equal);
-        
-        
-        //Queue<Board> neighbors;
-        //neighbors = (Queue<Board>) initial.neighbors();
-        //while (!neighbors.isEmpty()) {
-        //    StdOut.println("neighbor: " + neighbors.dequeue());
-        //}
-
-        //Board one = neighbors.dequeue();
-        //Board two = neighbors.dequeue();
-        //StdOut.println("first neigbbor: " + one);
-        //StdOut.println("second:" + two);
 
         // solve the puzzle
         Solver solver = new Solver(initial);
-        StdOut.println("solver moves: " + solver.moves());
-        StdOut.println("solver moves: " + solver.moves());
+
         // print solution to standard output
-        
         if (!solver.isSolvable())
             StdOut.println("No solution possible");
         else {
             for (Board board : solver.solution())
                 StdOut.println(board);
         }
-        
     }
-    
-  
-    
 }

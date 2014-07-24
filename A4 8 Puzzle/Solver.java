@@ -1,90 +1,92 @@
-import java.util.Comparator;
-
 public class Solver {
-    
-    private final MinPQ<Node> pq;
-    private final MinPQ<Node> pq_twin;
-    
-    private int moves = 0;
+    private Node lastNode;
+    private final MinPQ<Node> PQ;
+    private final MinPQ<Node> twinPQ;
+    private boolean solvable = false;
     
     // helper Node class
-    private class Node implements Comparable<Node>{
-        private Board board;
-        private int moves;
-        private Node prev;
+    private class Node implements Comparable<Node> {
+        private final Board board;
+        private final int moves;
+        private final Node prev;
+        private final int priority;
         
         // create the Node
         public Node(Board board, int moves, Node prev) {
             this.board = board;
             this.moves = moves;
             this.prev = prev;
-        
+            this.priority = board.manhattan() + moves;
         }
-        
-        //private class ByManhattan implements Comparator<Node>
-        //{
-            //public int compare(Node v, Node w) {
-            //    int mv = v.manhattan();
-            //    int mw = w.manhattan();
-            //    return Integer.compare(mv, mw);
-            //}
-        //}
         
         public int compareTo(Node that) {
             if (that == null)     throw new NullPointerException("Null item");
             if (this.board.equals(that.board))        return 0;
-            if (this.board.manhattan() < that.board.manhattan())  return -1;
+            if (this.priority < that.priority)  return -1;
             return +1;
         }
     }
     
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
-       
-       pq = new MinPQ<Node>();
-       
-       // insert the initial search node
-       Node init = new Node(initial, 0, null);
-       pq.insert(init);
-       
-      // delete node with minimum priority
-       Node curr_node = pq.delMin();
-       
-       do {
-    
-           
-           this.moves ++;
-           Queue<Board> neighbors = (Queue<Board>) curr_node.board.neighbors();
-           while (!neighbors.isEmpty()) {
-
-               Node neighbor = new Node(neighbors.dequeue(), moves, curr_node);
-               pq.insert(neighbor);
-           }
-           curr_node = pq.delMin();
-           
-       } while (!curr_node.board.isGoal());
-       
-
-       
+        
+        PQ = new MinPQ<Node>();
+        twinPQ = new MinPQ<Node>();
+        PQ.insert(new Node(initial, 0, null));
+        twinPQ.insert(new Node(initial.twin(), 0, null));
+        do {
+            Node currNode = processNode(PQ);
+            Node currTwinNode = processNode(twinPQ);
+            if (currNode.board.isGoal()) {
+                this.solvable = true;
+                lastNode = currNode;
+                break;
+            } 
+            else if (currTwinNode.board.isGoal()) {
+                this.solvable = false;
+                lastNode = null;
+                break;
+            }
+        } while(true);
     }
     
-    /*
+    // returns least node from priority queue
+    private Node processNode(MinPQ<Node> pq) {
+        // delete Node with minimum priority
+        Node currNode = pq.delMin();
+        
+        for (Board neighborBoard: currNode.board.neighbors()) {
+            if (currNode.prev == null || !neighborBoard.equals(currNode.prev.board)) {
+                Node neighborNode = new Node(neighborBoard, currNode.moves + 1, currNode);
+                pq.insert(neighborNode);
+           }
+        }
+        return currNode;
+    }
+    
     // is the initial board solvable?
     public boolean isSolvable() {
-        
-    } */
+        return this.solvable;
+    } 
     
     // min number of moves to solve initial board; -1 if no solution
     public int moves() {
-        return 1;
+        if (isSolvable()) return lastNode.moves;
+        else              return -1;
     }
-        
-    
-    /*
+   
     // sequence of boards in a shortest solution; null if no solution
     public Iterable<Board> solution() {
-        
-    } */
+        if (!isSolvable()) {
+            return null;
+        } else {
+            Stack<Board> solution = new Stack<Board>();
+            for (Node i = lastNode; i != null; i = i.prev) {
+                solution.push(i.board);
+            }
+            return solution;
+        }
+    } 
         
     // solve a slider puzzle (given below)
     public static void main(String[] args) {
@@ -98,12 +100,12 @@ public class Solver {
         
         
         Board initial = new Board(blocks);
-        StdOut.println(initial);
+        //StdOut.println(initial);
         
-        int hamming = 0;
-        hamming = initial.hamming();
+        //int hamming = 0;
+        //hamming = initial.hamming();
         //StdOut.println("hamming distance: " + hamming);
-        int manhattan = initial.manhattan();
+        //int manhattan = initial.manhattan();
         //StdOut.println("manhattan distance: " + manhattan);
         
         //boolean solved = initial.isGoal();
@@ -144,23 +146,20 @@ public class Solver {
         //Board two = neighbors.dequeue();
         //StdOut.println("first neigbbor: " + one);
         //StdOut.println("second:" + two);
-        
-        
-        
-        
+
         // solve the puzzle
         Solver solver = new Solver(initial);
-        
+        StdOut.println("solver moves: " + solver.moves());
+        StdOut.println("solver moves: " + solver.moves());
         // print solution to standard output
-        /*
-        //if (!solver.isSolvable())
-        //    StdOut.println("No solution possible");
-        //else {
-            StdOut.println("Minimum number of moves = " + solver.moves());
+        
+        if (!solver.isSolvable())
+            StdOut.println("No solution possible");
+        else {
             for (Board board : solver.solution())
                 StdOut.println(board);
-        //}
-        */
+        }
+        
     }
     
   

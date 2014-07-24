@@ -1,12 +1,11 @@
 public class Board {
     
     private final int N;    // size of Board
-    private int[][] tiles;               // = new int[N][N];
+    private int[][] tiles;              
     
     //construct a board from an N-by-N array of blocks
     // (where blocks[i][j] = block in row i, column j)
     public Board(int[][] blocks) {
-        //blocks = new int[this.N][this.N];
         N = blocks.length;
         tiles = new int[N][N];
 
@@ -17,8 +16,8 @@ public class Board {
             }
         }
     }
-    
-   // board dimension N
+
+    // board dimension N
     public int dimension() {
        return this.N; 
     }
@@ -52,23 +51,20 @@ public class Board {
                 } else if (tiles[i][j] == 0) {
                     continue;
                 } else {
-                    manhattan += manhattan_helper(tiles[i][j], i, j);
+                    manhattan += manhattanHelper(tiles[i][j], i, j);
                 }
              }
         }
         return manhattan;
     }
     
-    private int manhattan_helper(int number, int row, int col) {
-        // calculate the manhattan distance of this tile
-        int manhattan_dist;
-        int dest_row = (int) (Math.ceil((double) number / this.N) - 1);
-        int dest_col = (number + (this.N - 1)) % this.N;
-        manhattan_dist = Math.abs(dest_row - row) + Math.abs(dest_col - col);
-        return manhattan_dist;
+    private int manhattanHelper(int number, int row, int col) {
+        int distance;
+        int destRow = (int) (Math.ceil((double) number / this.N) - 1);
+        int destCol = (number + (this.N - 1)) % this.N;
+        distance = Math.abs(destRow - row) + Math.abs(destCol - col);
+        return distance;
     }
-                                 
-                                 
         
     // is this board the goal board?
     public boolean isGoal() {
@@ -96,7 +92,6 @@ public class Board {
     
     // a board obtained by exchanging two adjacent blocks in the same row
     public Board twin() {
-        
         // copy board
         int [][] blocks = new int[N][N];
         for (int i = 0; i < N; i++) 
@@ -105,22 +100,21 @@ public class Board {
         
         // swapping operation
         int prev = 0;
+        outerloop:
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                int idx = (i * this.N) + (j + 1);
-                //StdOut.println("index: " + idx);
-                // if number is 0 go onto next 
                 if (blocks[i][j] == 0) {
                     break;
-                } else if (blocks[i][j] != 0) {
-                    //StdOut.println("row: " + i);
+                } 
+                if (blocks[i][j] != 0) {
                     if (j == 0) {
-                        // save current number
                         prev = blocks[i][j];
-                    } else if (j == 1) {
+                    } 
+                    if (j == 1) {
                         // swap
                         blocks[i][j-1] = blocks[i][j];
                         blocks[i][j] = prev;
+                        break outerloop;
                     }
                 }
             }
@@ -131,37 +125,32 @@ public class Board {
         
     // does this board equal y?
     public boolean equals(Object y) {
-        
         if (y == this) return true;
         if (y == null) return false;
         if (y.getClass() != this.getClass()) return false;
         Board that = (Board) y;
-        
-        boolean board = true;
+        if (that.dimension() != this.dimension())
+            return false;
         for (int i = 0; i < this.N; i++) {
             for (int j = 0; j < this.N; j++) {
                 if (this.tiles[i][j] != that.tiles[i][j]) {
-                    board = false;
+                    return false;
                 }
             }
         }
-        return (this.N == that.N) && board;
+        return true;
     }
-        
 
     // all neighboring boards    
     public Iterable<Board> neighbors() {
-        
         // make a queue
         Queue<Board> result = new Queue<Board>();
-        
         int i, j = 0;
         outerloop:
         for (i = 0; i < N; i++) 
             for (j = 0; j < N; j++) {
             if (tiles[i][j] == 0) {
-                      
-                      break outerloop;
+                break outerloop;
             }
         }
         
@@ -174,43 +163,18 @@ public class Board {
         if (j < this.N -1)
             result.enqueue(new Board(swap(this.tiles, i, j, i , j + 1)));
         
-        /*
-        // make some board
-        int[][] blocks = new int[N][N];
-        for (int id = 0; id < N; id++) 
-            for (int jd = 0; jd < N; jd++) 
-                 blocks[i][j] = 1;
-        
-        Board test1 = new Board(blocks);
-        
-        //int[][] blocks = new int[N][N];
-        for (int idx = 0; idx < N; idx++) 
-            for (int jdx = 0; jdx < N; jdx++) 
-                 blocks[i][j] = 2;
-        
-        Board test2 = new Board(blocks);
-        */
-        
-        //result.enqueue(test1);
-        
-        //result.enqueue(test2);
-        
         return result;
     }
 
-    public int[][] swap(int[][] blocks, int row, int col, int to_row , int to_col) {
-        
+    private int[][] swap(int[][] blocks, int row, int col, int toRow , int toCol) {
         int[][] copy = new int[N][N];
         for (int i = 0; i < N; i++) 
             for (int j = 0; j < N; j++) 
-                 copy[i][j] = blocks[i][j];
-  
-        copy[to_row][to_col] = blocks[row][col];
-        copy[row][col] = blocks[to_row][to_col];
-        
+            copy[i][j] = blocks[i][j];
+        copy[toRow][toCol] = blocks[row][col];
+        copy[row][col] = blocks[toRow][toCol];
         return copy;
     }
-
         
     // string representation of the board (in the output format specified below)    
     public String toString() {
